@@ -26,9 +26,8 @@ yum -y install ansible
 ```
 
 ## Clone this Repo
-Ensure that you have SSH keypair configured in your NTT Gitlab account
 ```
-git clone git@scm.dimensiondata.com:Wei-Xiang.Koh/ansible.git
+git clone https://github.com/weixiangkoh/Ansible-Automation.git
 ```
 
 ## Setup Inventory
