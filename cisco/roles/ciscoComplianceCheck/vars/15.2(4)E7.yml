@@ -1,0 +1,10 @@
+---
+# vars file for ciscoComplianceCheck LAN-WAN-Switch-15.2.4.E7
+hardening_check:
+ - "no service pad"
+ - "service tcp-keepalives-in"
+ - "service tcp-keepalives-out"
+ - "service timestamps debug datetime msec localtime show-timezone"
+ - "service timestamps log datetime msec localtime show-timezone"
+ - "service password-encryption"
+ - "ip access-list standard Quiet_mode_Acl"

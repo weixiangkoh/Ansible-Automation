@@ -1,0 +1,5 @@
+---
+- name: adding management ip to management vlan
+  ios_config:
+    commands: "{{ item }}"
+  with_items: "{{ mgmt_config }}"

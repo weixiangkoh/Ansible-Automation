@@ -1,0 +1,7 @@
+--- 
+- name: Checkpoint Playbook
+  hosts: checkpoint
+  gather_facts: no
+  
+  roles:
+  - checkpointBackup

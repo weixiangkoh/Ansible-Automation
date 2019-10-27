@@ -1,0 +1,18 @@
+---
+# vars file for cisco_firmware_upgrade
+cisco_ios_mapping :
+  WS-C2960-24TT-L: c2960-lanbasek9-mz.150-1.SE3.bin
+  WS-C2960-48PST-L: c2960-lanbasek9-mz.150-1.SE3.bin
+  WS-C2960-48TT-L: c2960-lanbasek9-mz.150-1.SE3.bin
+  WS-C2960S-48FPS-L: c2960s-universalk9-mz.150-2a.SE9.bin
+  WS-C2960X-24TS-L: c2960x-universalk9-mz.150-2a.EX5.bin
+  WS-C2960X-48FPS-L: c2960x-universalk9-mz.150-2a.EX5.bin
+  WS-C2960XR-48TS-I: c2960x-universalk9-mz.150-2a.EX5.bin
+  WS-C3750-48PS-S: c3750-ipbasek9-mz.150-2.SE9.bin
+  WS-C3750V2-48PS-S: c3750-ipservicesk9-mz.150-2.SE9.bin
+  WS-C3750X-48PF-L: c3750e-universalk9-mz.150-2.SE9.bin
+  WS-C2960X-24TD-L: c2960x-universalk9-mz.150-2a.EX5.bin
+
+os_filename: nxos.9.2.4.bin
+os_filepath: /home/admin
+

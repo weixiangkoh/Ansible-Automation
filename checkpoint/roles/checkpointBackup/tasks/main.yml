@@ -1,0 +1,21 @@
+---
+# tasks file for checkpointBackup
+- set_fact:
+    cp_user: "{{ ansible_user }}"
+    cp_host: "{{ ansible_host }}"
+  no_log: true
+  
+- name: Creates directory
+  file:
+    path: "{{ path }}"
+    state: directory
+    mode: u=rwx,g=r,o=r
+  delegate_to: localhost
+  
+- name: starting backup python script
+  script: "checkpoint_config_backup.py {{ cp_host }} {{ cp_user }} {{ ansible_password }} {{ path }} {{ filename }}"
+  register: log
+  delegate_to: localhost
+
+- debug:
+    msg: "{{ log }}"

@@ -1,0 +1,9 @@
+{% if mgmt_interface == "vlan" %}
+vlan {{ mgmt_interface_id }}
+inter vlan {{ mgmt_interface_id }}
+ip address {{ mgmt_ip }} {{ mgmt_subnet_mask }}
+{% else %}
+Remember to configure this for management port configuration
+{% endif %}
+
+ip routing

@@ -1,0 +1,33 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+
+  vars:
+    config_dir: "{{ playbook_dir }}/cfg/{{ ansible_net_hostname }}.cfg"
+
+  tasks:
+
+  - name: Gathering nxos facts
+    nxos_facts:
+      gather_subset: all
+
+  - name: Turn on feature scp-server
+    nxos_feature: 
+      feature: scp-server
+      state: enabled
+
+  - name: Sending config file
+    nxos_file_copy:
+      local_file: "{{ config_dir }}"
+      remote_file: "config.cfg"
+
+  - name: Restore config
+    nxos_config:
+      replace_src: config.cfg
+      replace: config
+
+  - name: Copy Running config to Startup
+    nxos_command: 
+      commands: copy run start

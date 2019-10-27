@@ -1,0 +1,4 @@
+---
+# defaults file for ciscoComplianceCheck
+
+ANSIBLE_HOST_KEY_CHECKING: false

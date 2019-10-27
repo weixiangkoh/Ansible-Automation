@@ -1,0 +1,13 @@
+--- 
+- name: Gather IOS facts (Cisco)
+  block:
+    - ios_facts:
+
+    - set_fact:
+        brand: cisco
+        ansible_network_os: ios
+  rescue:
+    - debug:
+        msg: "This is not a cisco IOS device :("
+  when:
+    ansible_net_hostname is not defined or brand is not defined

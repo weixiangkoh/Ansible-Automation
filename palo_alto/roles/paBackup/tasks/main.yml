@@ -1,0 +1,52 @@
+---
+# tasks file for paBackup
+- set_fact:
+    PA_user: "{{ ansible_user }}"
+
+- name: Generate key
+  uri:
+    validate_certs: no
+    url: https://{{ ansible_host }}/api/?type=keygen&user={{ PA_user }}&password={{ ansible_password }}
+    content_as_json: true
+    return_content: yes
+  register: output
+  delegate_to: localhost
+  no_log: true
+
+- name: get key
+  xml:
+    xmlstring: "{{ output.content }}"
+    xpath: //response/result/key
+    content: text
+  register: found
+  delegate_to: localhost
+  no_log: true
+
+- set_fact:
+     key: "{{ found.matches[0]['key'] }}"
+  no_log: true
+
+- name: Backup Palo
+  uri:
+    validate_certs: no
+    url: https://{{ ansible_host }}/api/?type=export&category=configuration&key={{ key }}
+    return_content: yes
+  register: run
+  delegate_to: localhost
+  no_log: true
+  
+- name: Creates directory
+  file:
+    path: "{{ path }}"
+    state: directory
+    mode: u=rwx,g=r,o=r
+  delegate_to: localhost
+    
+- name: savingToLocal
+  copy:
+    content: "{{ run['content'] }}"
+    dest: "{{ path }}{{ filename }}"
+  delegate_to: localhost
+  no_log: true
+
+

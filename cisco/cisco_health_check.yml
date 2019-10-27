@@ -1,0 +1,47 @@
+---
+- name: Update ip_route.txt
+  hosts: cisco
+  gather_facts: false
+  connection: local
+
+  tasks:
+  - nxos_facts:
+      gather_subset: all
+
+
+#  - name: Remove Week/Day Timestamp
+#    replace:
+#      path: "{{ playbook_dir }}/files/other.txt"
+#      regexp: '(\d{1,2})w(\d{1})d, '
+#      replace: ''
+
+#  - name: Remove Day/Hour Timestamp
+#    replace:
+#      path: "{{ playbook_dir }}/files/other.txt"
+#      regexp: '(\d{1})d(\d{1,2})h, '
+#      replace: ''
+
+#  - name: Remove Hour/Minute/Seconds Timestamp
+#    replace:
+#      path: "{{ playbook_dir }}/files/other.txt"
+#      regexp: '(\d{1,2}):(\d{1,2}):(\d{1,2}), '
+#      replace: ''
+
+
+  - name: Diff command
+    command: "diff -u {{ playbook_dir }}/files/new_route_table.txt {{ playbook_dir }}/files/sh_route_table.txt"
+    register: diff_output
+    ignore_errors: true
+    delegate_to: localhost
+
+  - set_fact:
+      diff: "{{ diff_output.stdout_lines }}"
+
+  - name: Generate report
+    template:
+      src: "{{ playbook_dir }}/template/cisco_report.j2"
+      dest: "{{ playbook_dir }}/reports/cisco_report.html"
+    delegate_to: localhost
+    run_once: true
+
+

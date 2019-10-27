@@ -1,0 +1,44 @@
+---
+- name: Getting Palo Alto Facts
+  block:
+    - set_fact:
+        panos_user: "{{ ansible_user }}"
+      delegate_to: "{{ ansible_host }}"
+      no_log: true
+
+    - panos_op:
+        ip_address: '{{ ansible_host }}'
+        username: '{{ panos_user }}'
+        password: '{{ ansible_password }}'
+        cmd: 'show system info'
+      register: output
+      delegate_to: localhost
+
+    - name: Getting Version
+      xml:
+        xmlstring: "{{ output.stdout_xml }}"
+        xpath: /response/result/system/sw-version
+        content: text
+      register: sw_version
+      delegate_to: localhost
+
+    - name: Getting Hostname
+      xml:
+        xmlstring: "{{ output.stdout_xml }}"
+        xpath: /response/result/system/hostname
+        content: text
+      register: hostname
+      delegate_to: localhost
+
+    - name: Saving Info
+      set_fact:
+        ansible_net_version: "{{ sw_version.matches[0]['sw-version'] }}"
+        ansible_net_hostname: "{{ hostname.matches[0]['hostname'] }}"
+        brand: "palo_alto"
+        ansible_network_os: ""
+  rescue:
+    - debug:
+        msg: "This is not a Palo Alto device :("
+
+  when:
+    ansible_net_hostname is not defined or brand is not defined

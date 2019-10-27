@@ -1,0 +1,32 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  vars:
+    provision_ntp:
+      10.10.10.10:
+        prefer: enabled
+        key_id: 10
+      1.1.1.1:
+        prefer: disabled
+        key_id: 20
+
+    removal_ntp:
+      - 1.1.1.1
+
+  tasks:
+  - name: Configure NTP Server
+    nxos_ntp:
+      server: "{{ item.key }}"
+      prefer: "{{ item.value.prefer }}"
+      key_id: "{{ item.value.key_id }}"
+      host: "{{ ansible_host }}"
+      username: "{{ ansible_user }}"
+      password: "{{ ansible_ssh_pass }}"
+    loop: "{{ lookup('dict', provision_ntp) }}"
+
+  - name: Removal Of NTP Server
+    nxos_config:
+      lines: " no ntp server {{ item }}"
+    with_items: "{{ removal_ntp }}"

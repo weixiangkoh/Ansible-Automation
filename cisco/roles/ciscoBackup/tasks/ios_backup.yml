@@ -1,0 +1,22 @@
+---
+- name: Gathering Device Facts
+  ios_facts:
+    gather_subset: all
+    
+- name: Creates directory
+  file:
+    path: "{{ path }}"
+    state: directory
+    mode: u=rwx,g=r,o=r
+    
+- name: Issue "Show Run" command
+  ios_command:
+    commands: show run
+  register: run
+  
+- name: Saving Config to local
+  copy:
+    content: "{{ run.stdout[0] }}"
+    dest: "{{ path }}/{{ filename }}"
+  delegate_to: localhost
+  no_log: true

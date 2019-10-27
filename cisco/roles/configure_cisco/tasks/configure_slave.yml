@@ -1,0 +1,32 @@
+---
+- name: GATHER ROUTER FACTS
+  ios_facts:
+
+- name: Generating Config file for switch
+  template:
+    src: swconfig_template.j2
+    dest: "roles/configure_cisco/files/{{ ansible_net_serialnum }}.txt"
+
+- name: Configuring device with baseline config
+  ios_config:
+    commands: "{{ item }}"
+  with_items: "{{ config }}"
+
+- name: Write Memory
+  ios_command:
+    commands: "wr mem\n"
+
+- name: Output "Show run"
+  ios_command:
+    commands: show run
+  register: run
+
+- name: Saving running config
+  copy:
+    content: "{{ run.stdout[0] }}"
+    dest: "./{{ ansible_net_serialnum }}_output.txt"
+
+- name: Generating Config file for Management Switch
+  template:
+    src: mgmt_template.j2
+    dest: roles/configure_cisco/files/config_management.txt

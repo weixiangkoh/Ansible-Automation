@@ -1,0 +1,31 @@
+---
+- name: Collect BIG-IP Facts
+  block:
+    - set_fact:
+        bigip_user: "{{ ansible_user }}"
+      delegate_to: "{{ ansible_host }}"
+      no_log: true
+
+    - bigip_device_facts:
+        gather_subset:
+          - devices
+        provider:
+          server: "{{ ansible_host }}"
+          user: "{{ bigip_user }}"
+          password: "{{ ansible_password }}"
+          validate_certs: no
+      delegate_to: localhost
+      register: output
+
+    - name: Saving info
+      set_fact:
+         ansible_net_version: "{{ output.devices[0]['software_version'] }}"
+         ansible_net_hostname: "{{ output.devices[0]['hostname'] }}"
+         brand: F5
+         ansible_network_os: ""
+  rescue:
+    - debug:
+        msg: "This is not a Bigip device :("
+
+  when:
+    ansible_net_hostname is not defined or brand is not defined

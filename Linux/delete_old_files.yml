@@ -1,0 +1,19 @@
+---
+- name: Cleanup Files
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Locate file more than 2days
+    find:
+      paths: /home/
+      age: 2d
+      recurse: yes
+    register: old_files
+    
+    
+  - name: Delete files
+    file:
+      path: "{{ item['path'] }}"
+      state: absent
+    with_items: "{{ old_files['files'] }}"
+  

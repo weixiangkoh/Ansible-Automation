@@ -1,0 +1,8 @@
+---
+path: "/home/shared_folder/backup/F5/{{ ansible_net_hostname }}/"
+filename: "{{ output.devices[0]['hostname'] }}_{{ lookup('pipe','date +%d-%m-%Y') }}.ucs"
+provider:
+    server: "{{ ansible_host }}"
+    user: "{{ bigip_user }}"
+    password: "{{ ansible_password }}"
+    validate_certs: no

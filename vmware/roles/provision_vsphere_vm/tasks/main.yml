@@ -1,0 +1,37 @@
+---
+# tasks file for provision_vsphere_vm
+- name: Create Virtual Machine with given ESXi hostname
+  vmware_guest:
+    validate_certs: no
+    datacenter: KBTLABDC
+    datastore: VNX-LUN0
+    folder: /
+    name: weixiang_testing
+    template: weixiang_centos_7_template
+    state: poweredon
+    guest_id: centos64Guest
+    annotation: Added by Ansible.
+    disk:
+    - size_gb: 50
+      type: thin
+      datastore: VNX-LUN0
+    hardware:
+      memory_mb: 4096
+      num_cpus: 4
+      scsi: paravirtual
+    networks:
+      - name: DVS-VLAN32
+        ip: 10.68.32.112
+        gateway: 10.68.32.1
+        netmask: 255.255.255.0
+        type: static
+        allow_guest_control: yes
+    wait_for_ip_address: yes
+    customization:
+      dns_servers:
+        - 8.8.8.8
+        - 8.8.4.4
+      password: P@ssw0rd123
+      hostname: test_vm
+    wait_for_customization: yes
+  register: deploy_vm

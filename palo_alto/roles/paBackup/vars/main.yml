@@ -1,0 +1,3 @@
+---
+path: "/home/backup/palo_alto/{{ ansible_net_hostname }}/"
+filename: "{{ inventory_hostname }}_{{ lookup('pipe','date +%d-%m-%Y') }}_config.xml"

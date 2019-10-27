@@ -1,0 +1,17 @@
+---
+# tasks file for provision_webserver
+- name: Update all packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: Installing httpd
+  yum:
+    name: httpd
+    state: latest
+
+- name: Enabling httpd service
+  service:
+    name: httpd
+    state: started
+    enabled: yes

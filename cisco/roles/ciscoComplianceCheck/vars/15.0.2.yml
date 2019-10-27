@@ -1,0 +1,9 @@
+---
+# vars file for ciscoComplianceCheck Switch-15.0.2-SE11
+hardening_check:
+ - "no service pad"
+ - "service tcp-keepalives-in"
+ - "service tcp-keepalives-out"
+ - "service timestamps debug datetime msec localtime show-timezone"
+ - "service timestamps log datetime msec localtime show-timezone"
+ - "service password-encryption"

@@ -1,0 +1,5 @@
+---
+- name: update excel script
+  script: "updateExcel.py '{{ brand }}' '{{ ansible_host }}' '{{ ansible_net_hostname }}' '{{ ansible_net_version }}' '{{ ansible_network_os }}'"
+  delegate_to: localhost
+

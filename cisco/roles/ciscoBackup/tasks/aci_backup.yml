@@ -1,0 +1,39 @@
+---
+- name: Set ACI username
+  set_fact:
+    aci_user: "{{ ansible_user }}"
+  delegate_to: "{{ ansible_host }}"
+
+- name: Create a Snapshot
+  aci_config_snapshot:
+    host: "{{ ansible_host }}"
+    username: "{{ aci_user }}"
+    password: "{{ ansible_password }}"
+    validate_certs: no
+    include_secure: yes
+    export_policy: ansible_aci_config_backup
+    state: present
+  delegate_to: localhost
+
+- name: sleep for 10 seconds and continue with play
+  wait_for: timeout=10
+  delegate_to: localhost
+
+- name: Query Existing Snapshots
+  aci_config_snapshot:
+    host: "{{ ansible_host }}"
+    username: "{{ aci_user }}"
+    password: "{{ ansible_password }}"
+    validate_certs: no
+    export_policy: ansible_aci_config_backup
+    state: query
+  delegate_to: localhost
+  register: output
+
+- name: Getting file name
+  set_fact:
+    filename: "{{ output['current'][0]['configSnapshotCont']['children'][0]['configSnapshot']['attributes']['fileName'] }}"
+
+- name: running script to grab file
+  script: "retrieve_file.py {{ ansible_host }} {{ aci_user }} {{ ansible_password }} {{ filename }} {{ path }}"
+  delegate_to: localhost

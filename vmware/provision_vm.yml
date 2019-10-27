@@ -1,0 +1,14 @@
+---
+- name: Create new VM
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  roles:
+    - provision_vsphere_vm
+
+  tasks:
+  - name: adding host to memory
+    set_stats:
+      data:
+        http_server: "{{ deploy_vm.instance.hw_eth0.ipaddresses[0] }}"

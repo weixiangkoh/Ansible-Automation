@@ -1,0 +1,33 @@
+{% if mgmt_interface == "vlan" %}
+vlan {{ mgmt_interface_id }}
+inter vlan {{ mgmt_interface_id }}
+ip address {{ desired_ip }} {{ mgmt_subnet_mask }}
+{% else %}
+Remember to configure this for management port configuration
+{% endif %}
+hostname {{ desired_hostname }}
+
+
+{# PLEASE STATE YOUR OTHER CONFIGURATION BELOW #}
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+boot-start-marker
+boot-end-marker
+enable secret cisco
+username backup privilege 15 password 0 b@ckup123
+no aaa new-model
+system mtu routing 1500
+vtp mode transparent
+spanning-tree mode pvst
+spanning-tree extend system-id
+vlan 201-202
+interface range GigabitEthernet0/1 - 2
+switchport mode trunk
+interface range FastEthernet0/1 - 24
+switchport access vlan 202
+spanning-tree portfast
+ip default-gateway 10.68.1.1
+ip http server
+ip http secure-server

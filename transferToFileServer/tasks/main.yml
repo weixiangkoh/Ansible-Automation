@@ -1,0 +1,9 @@
+# tasks file for transferToFileServer
+- name: Sending to File Server
+  command: "curl -T {{ path }}{{ filename }} ftp://{{ fs_ip }}/{{ brand }}/{{ inventory_hostname }}/ --user {{ fs_username }}:{{ fs_password }} --ftp-create-dirs"
+  delegate_to: localhost
+
+- name: Delete from local
+  file:
+    path: "{{ path }}{{ filename }}"
+    state: absent

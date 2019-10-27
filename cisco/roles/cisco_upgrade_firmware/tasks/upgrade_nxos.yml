@@ -1,0 +1,40 @@
+---
+- name: Perform OS Upgrade
+  block:
+    - name: Print current version
+      debug:
+        msg: "{{ ansible_net_version }}"
+
+    - name: Changing Boot config
+      nxos_config:
+        commands: "boot nxos {{ ansible_net_filesystems[0] }}{{ os_filename }}"
+
+    - name: Sending Install command
+      nxos_command:
+        commands:
+          - copy run start
+
+    - name: Sending Reboot command
+      nxos_reboot:
+        confirm: true
+      args:
+        timeout: 10
+
+  rescue:
+    - name: REBOOT IN PROGRESS - WAITING FOR DEVICE TO COME BACK ONLINE
+      wait_for:
+        port: 22
+        state: started
+        timeout: 300
+        delay: 60
+        host: "{{ ansible_host }}"
+
+  always:
+    - name: REBOOT IN PROGRESS - WAITING FOR DEVICE TO COME BACK ONLINE
+      wait_for:
+        port: 22
+        state: started
+        timeout: 300
+        delay: 60
+        host: "{{ ansible_host }}"
+

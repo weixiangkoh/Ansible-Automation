@@ -1,0 +1,60 @@
+---
+- name: Gathering nxos facts
+  nxos_facts:
+    gather_subset: all
+
+- name: Getting Device FS free space
+  nxos_command:
+    commands: "dir | grep free | awk '{print $1}'"
+  register: freespace
+
+- name: Getting image properties from local
+  stat:
+    path: "{{ os_filepath }}/{{ os_filename }}"
+    get_md5: yes
+  register: p
+
+- name: Setting variables
+  set_fact:
+    image_size: "{{ (p.stat.size) | round }}"
+    fs_freespace: "{{ freespace.stdout[0] }}"
+
+- name: Pre-check device free space
+  fail:
+    msg: "not enough file space"
+  when: fs_freespace|int < image_size|int
+
+- name: Free space on device vs image size
+  debug:
+    msg: "{{ fs_freespace }} {{ image_size }}"
+
+- name: Send and validate image file
+  block:
+    - name: Turn on feature scp-server
+      nxos_feature:
+        feature: scp-server
+        state: enabled
+
+    - name: Send file to NXOS device
+      nxos_file_copy:
+        local_file: "{{ os_filepath }}/{{ os_filename }}"
+
+    - name: Getting New Image file Hash on device
+      nxos_command:
+        commands: "show file {{ ansible_net_filesystems[0]}}{{os_filename}} md5sum"
+      register: md5_hash_device
+
+    - name: MD5 hash on device vs MD5 hash on local
+      debug:
+        msg: "{{ md5_hash_device.stdout[0] }} {{ p.stat.md5 }}"
+
+    - name: Verifying MD5 hash
+      fail:
+        msg: Image check failed
+      when: p.stat.md5 not in md5_hash_device.stdout[0]
+  rescue:
+    - name: Deleting Image file from device
+      nxos_command:
+        commands: "del {{ ansible_net_filesystems[0]}}{{ os_filename }}"
+
+

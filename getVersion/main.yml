@@ -1,0 +1,14 @@
+---
+- hosts: all
+  gather_facts: no
+  connection: local
+  tasks:
+  - include_tasks: tasks/getCiscoFacts.yml
+
+  - include_tasks: tasks/getPaloAltoFacts.yml
+
+  - include_tasks: tasks/getF5facts.yml
+
+  - include_tasks: tasks/getCiscoAciFacts.yml
+
+  - import_tasks: updateExcel/main.yml

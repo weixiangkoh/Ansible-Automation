@@ -1,0 +1,16 @@
+---
+# tasks file for cisco_upgrade
+
+#NXOS upgrade
+- name: Perfoming Pre check
+  import_tasks: "pre_check_nxos.yml"
+  when:  ansible_network_os == 'nxos'
+
+- name: Performing upgrade
+  import_tasks: upgrade_nxos.yml
+  when: ansible_network_os == 'nxos'
+
+#IOS Upgrade
+- name: Performing upgrade for IOS
+  import_tasks: "ios.yml"
+  when: ansible_network_os == 'ios'

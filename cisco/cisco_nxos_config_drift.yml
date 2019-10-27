@@ -1,0 +1,48 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  vars:
+    baseline_config:
+      - password strength-check asdasdasd oikoik
+      - 10 permit tcp 192.0.2.1/24 any
+      - snmp-server host 8.8.8.8 traps version 1 test2
+
+  tasks:
+  - nxos_facts:
+      gather_subset: all
+
+  - name: Get backup
+    nxos_config:
+      backup: yes
+      backup_options:
+        filename: "{{ ansible_net_hostname }}.cfg"
+        dir_path: "{{ playbook_dir }}/tmp/"
+
+  - name: Remove lines
+    lineinfile:
+      path: "{{ playbook_dir}}/tmp/{{ ansible_net_hostname }}.cfg"
+      state: absent
+      regexp: "{{ item }}"
+    with_items:
+      - '^!Time'
+      - '^!Command'
+      - '^!Running configuration'
+
+  - name: Diff command
+    command: "diff -u {{ playbook_dir }}/cfg/{{ ansible_net_hostname }}.cfg {{ playbook_dir }}/tmp/{{ ansible_net_hostname }}.cfg"
+    register: diff_output
+    ignore_errors: true
+
+  - set_fact:
+      diff: "{{ diff_output.stdout_lines }}"
+      running_config: "{{ lookup('file','{{ playbook_dir }}/tmp/{{ ansible_net_hostname }}.cfg') }}"
+
+  - name: Generate report
+    template:
+      src: "{{ playbook_dir }}/template/cisco_report.j2"
+      dest: "{{ playbook_dir }}/reports/cisco_report.html"
+    delegate_to: localhost
+    run_once: true
+

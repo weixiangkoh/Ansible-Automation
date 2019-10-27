@@ -1,0 +1,43 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  vars:
+    provision_acl:
+      acltest1:
+        seq: 10
+        src: 192.0.2.1/24
+        action: permit
+        dest: any
+        state: present
+        proto: tcp
+      acltest2:
+        seq: 20
+        src: 10.10.10.1/16
+        action: deny
+        dest: 2.2.2.2/23
+        state: present
+        proto: udp
+
+    removal_acl:
+      - acltest2
+    
+  tasks:
+  - name: Provision NXOS ACL
+    nxos_acl:
+      name: "{{ item.key }}"
+      seq: "{{ item.value.seq }}"
+      action: "{{ item.value.action }}"
+      proto: "{{ item.value.proto }}"
+      src: "{{ item.value.src }}"
+      dest: "{{ item.value.dest }}"
+      state: "{{ item.value.state }}"
+    loop: "{{ lookup('dict', provision_acl) }}"
+
+  
+  - name: Removal NXOS ACL
+    nxos_acl:
+      name: "{{ item }}"
+      state: delete_acl
+    with_items: "{{ removal_acl }}"

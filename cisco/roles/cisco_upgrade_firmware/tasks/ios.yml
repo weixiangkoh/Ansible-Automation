@@ -1,0 +1,62 @@
+---
+- name: GATHER ROUTER FACTS
+  ios_facts:
+    gather_subset: all
+
+- name: Print Model and Software Version
+  debug:
+    msg: "Model = {{ ansible_net_model }} SW_Version = {{ ansible_net_version }}"
+
+- name: Mapping OS Image Filename
+  set_fact:
+    os_filename: "{{ item.value }}"
+  loop: "{{ lookup('dict', cisco_ios_mapping) }}"
+  when: "'{{ ansible_net_model }}' in item.key"
+  
+- name: Enable SCP Server
+  ios_config:
+    commands:
+      - ip scp server enable
+
+- name: Copy IOS IMAGE FILE TO DEVICE
+  net_put:
+    src: "./files/{{ os_filename }}"
+    protocol: scp
+    dest: "{{ os_filename }}"
+  vars:
+    ansible_command_timeout: 3600
+
+- name: Set flash:{{ os_filename }}
+  ios_config:
+    commands: "boot system flash:{{ os_filename }}\n"
+
+- name: Saving Configuration
+  ios_command:
+    commands: "copy run start\n"
+
+- name: Store Old Version
+  set_fact:
+    device_old_version: "{{ ansible_net_version }}"
+
+- name: Send Reload Command
+  ios_command:
+    commands: "reload\n"
+
+
+- name: WAIT FOR ROUTER TO RETURN
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 22
+    delay: 60
+  delegate_to: localhost
+  vars:
+    ansible_command_timeout: 3600
+
+
+- name: GATHER NEW ROUTER FACTS
+  ios_facts:
+    gather_subset: all
+
+- name: Print Model and Software Version
+  debug:
+    msg: "Model = {{ ansible_net_model }} New_SW_Version = {{ ansible_net_version }} Old_SW_Version = {{ device_old_version }}"

@@ -1,0 +1,4 @@
+---
+# vars file for push_git
+CHANGE_DATE: "{{ lookup('pipe','date +%d-%m-%Y') }}"
+archive_dir: /home/shared_folder/backup

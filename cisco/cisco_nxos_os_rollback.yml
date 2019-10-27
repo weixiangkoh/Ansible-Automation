@@ -1,0 +1,65 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  vars:
+    os_filename: nxos.7.0.3.I7.7.bin
+
+  tasks:
+  - name: Gathering nxos facts
+    nxos_facts:
+      gather_subset: all
+
+  - name: Perform OS Change
+    block:
+      - name: Print current version
+        debug:
+          msg: "{{ ansible_net_version }}"
+          
+      - name: ENSURE OS IS CORRECT
+        nxos_install_os:
+          system_image_file: "{{ os_filename }}"
+      
+      - name: Changing Boot config
+        nxos_config:
+          commands: "boot nxos {{ ansible_net_filesystems[0] }}{{ os_filename }}"
+
+      - name: Sending Install command
+        nxos_command:
+          commands:
+            - install all nxos {{ ansible_net_filesystems[0]}}{{ os_filename }}"
+            - copy run start
+
+      - name: Sending Reboot command
+        nxos_reboot:
+          confirm: true
+
+    rescue:
+      - name: REBOOT IN PROGRESS - WAITING FOR DEVICE TO COME BACK ONLINE
+        wait_for:
+          port: 22
+          state: started
+          timeout: 300
+          delay: 60
+          host: "{{ ansible_host }}"
+      
+    always:
+      - name: REBOOT IN PROGRESS - WAITING FOR DEVICE TO COME BACK ONLINE
+        wait_for:
+          port: 22
+          state: started
+          timeout: 300
+          delay: 60
+          host: "{{ ansible_host }}"
+
+- hosts: cisco
+  gather_facts: no
+  connection: local
+  
+  tasks:  
+  - name: GATHER FACTS TO RECORD CURRENT VERSION OF NX-OS
+    nxos_facts:
+
+  - debug:
+        msg: "{{ ansible_net_version }}"

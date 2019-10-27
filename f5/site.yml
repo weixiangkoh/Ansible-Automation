@@ -1,0 +1,6 @@
+- name: F5 Playbook
+  hosts: F5
+  gather_facts: no
+
+  roles:
+  - f5Backup

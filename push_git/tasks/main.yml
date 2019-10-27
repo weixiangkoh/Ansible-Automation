@@ -1,0 +1,18 @@
+---
+# tasks file for push_git
+- name: Git add, commit and push
+  block:
+  - name: COMMIT THE CHANGE CONFIGS
+    shell: git add . && git commit -m ' Commit with Palo Alto playbook on "{{ CHANGE_DATE }}"'
+    args:
+        chdir: "{{ archive_dir }}"
+    register: output
+    ignore_errors: true
+
+  - name: PUSH TO LOCAL GIT
+    shell: git push
+    args:
+        chdir: "{{ archive_dir }}"    
+    when: '"changed" in output.stdout'
+  run_once: yes
+  delegate_to: localhost

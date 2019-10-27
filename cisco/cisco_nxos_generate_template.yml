@@ -1,0 +1,7 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  roles:
+    - generate_cisco_configuration

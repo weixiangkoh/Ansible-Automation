@@ -1,0 +1,9 @@
+---
+# tasks file for ciscoBackup
+- import_tasks: ios_backup.yml
+  when:
+    - ansible_network_os == "ios"
+
+- import_tasks: aci_backup.yml
+  when:
+    - ansible_network_os == "aci"

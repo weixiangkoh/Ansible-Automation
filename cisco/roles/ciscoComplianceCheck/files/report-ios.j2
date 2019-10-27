@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+	
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body {
+  background:#353a40;
+}
+
+table {
+  border-collapse: separate;
+  background:#fff;
+  @include border-radius(5px);
+  margin:50px auto;
+  @include box-shadow(0px 0px 5px rgba(0,0,0,0.3));
+}
+
+thead {
+  @include border-radius(5px);
+}
+
+thead th {
+  font-family: 'Patua One', monospace;
+  font-size:16px;
+  font-weight:400;
+  color:#fff;
+  @include text-shadow(1px 1px 0px rgba(0,0,0,0.5));
+  text-align:left;
+  padding:20px;
+  border-top:1px solid #858d99;
+  background: #353a40;
+
+  &:first-child {
+   @include border-top-left-radius(5px);
+  }
+
+  &:last-child {
+    @include border-top-right-radius(5px);
+  }
+}
+
+tbody tr td {
+  font-family: 'Open Sans', sans-serif;
+  font-weight:400;
+  color:#000000;
+  font-size:13px;
+  padding:20px 20px 20px 20px;
+  border-bottom:1px solid #e0e0e0;
+
+}
+
+tbody tr:nth-child(2n) {
+  background:#f0f3f5;
+}
+
+tbody tr:last-child td {
+  border-bottom:none;
+  &:first-child {
+    @include border-bottom-left-radius(5px);
+  }
+  &:last-child {
+    @include border-bottom-right-radius(5px);
+  }
+}
+
+span.highlight {
+    background-color: yellow;
+}
+</style>
+
+</head>
+<body>
+<table>
+    <thead>
+        <tr>
+            <th>Hostname</th>
+            <th>Model Type</th>
+            <th>Serial Number</th>
+            <th>OS version </th>
+            <th>IP </th>
+            <th>Compliance Check </th>
+            <th>Non-Compliance Config </th>
+        </tr>
+    </thead>
+    <tbody>
+{% for network_switch in groups['cisco'] %}
+        <tr>
+        {% if hostvars[network_switch]['ansible_net_version'] is defined %}
+            <td>{{hostvars[network_switch]['ansible_net_hostname']}}</td>
+            <td>{{hostvars[network_switch]['ansible_net_model']}}</td>
+            <td>{{hostvars[network_switch]['ansible_net_serialnum']}}</td>
+            <td>{{hostvars[network_switch]['ansible_net_version']}}</td>
+            <td>{{hostvars[network_switch]['ansible_host']}}</td>
+			{% if hostvars[network_switch]['hardening_check'] is defined %}
+				{% set failed = [] %}
+				{% for checks in  hostvars[network_switch]['hardening_check'] %}
+					{% if checks not in hostvars[network_switch]['showRun']%}
+						{{ failed.append(checks) }}
+					{% endif %}
+				{% endfor %}
+				
+				{% if failed|length == 0 %}
+					<td bgcolor="#53f442"> Passed </td>
+					<td>
+						{% set empty_string = ' ' %}
+						{{ empty_string }}
+					</td>
+				{% else %}
+					<td bgcolor="#f44141"> Failed </td>
+					<td> 
+						{% for statement in failed %}
+							- {{ statement }} <br>
+						{% endfor %}
+					</td>
+				{% endif %}
+			{% else %}
+				<td bgcolor="#f44141">Compliance File for this version cannot be found</td>
+            {% endif %}
+        {% else %}
+            <td bgcolor="#f44141"> </td>
+            <td bgcolor="#f44141"> </td>
+            <td bgcolor="#f44141"> </td>
+            <td bgcolor="#f44141"> </td>
+            <td bgcolor="#f44141">{{hostvars[network_switch]['ansible_host']}}</td>
+            <td bgcolor="#f44141">Host Unreachable or cannot access device with provided credentials</td>
+            <td bgcolor="#f44141"> </td>
+            <td bgcolor="#f44141"> </td>
+
+        {% endif %}
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

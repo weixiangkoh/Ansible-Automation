@@ -1,0 +1,19 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: Get tenants
+    aci_rest:
+      hostname:
+      username:
+      password:
+      method: get
+      path: /api/node/class/fvTenant.json
+      validate_certs: no
+    delegate_to: localhost
+    register: output
+
+  - debug:
+      msg: "{{ output }}"

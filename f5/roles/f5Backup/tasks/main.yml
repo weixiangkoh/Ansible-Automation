@@ -1,0 +1,28 @@
+---
+# tasks file for f5Backup
+- set_fact:
+    bigip_user: "{{ ansible_user }}"
+  no_log: true
+    
+- name: Collect all BIG-IP facts
+  bigip_device_facts:
+    gather_subset:
+      - devices
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  register: output
+
+- name: Download a new UCS
+  bigip_ucs_fetch:
+    src: "{{ filename }}"
+    dest: "{{ path }}{{ filename }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+
+
+- name: Remove uploaded UCS file
+  bigip_ucs:
+    ucs: "{{ filename }}"
+    state: absent
+    provider: "{{ provider }}"
+  delegate_to: localhost

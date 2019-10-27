@@ -1,0 +1,35 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  vars:
+    provision_snmp:
+      test:
+        host: 10.10.10.10
+        state: present
+      test2:
+        host: 2.2.2.2
+        state: present
+
+    remove_snmp:
+      test2:
+        host: 10.10.10.10
+      test4:
+        host: 4.4.4.4
+
+  tasks:
+  - name: Provision NXOS SNMP
+    nxos_snmp_host:
+      snmp_host: "{{ item.value.host }}"
+      community: "{{ item.key }}"
+      state: "{{ item.value.state }}"
+    loop: "{{ lookup('dict', provision_snmp) }}"
+
+  - name: Removal NXOS SNMP
+    nxos_snmp_host:
+       snmp_host: "{{ item.value.host }}"
+       community: "{{ item.key }}"
+       state: absent
+    loop: "{{ lookup('dict', remove_snmp) }}"
+

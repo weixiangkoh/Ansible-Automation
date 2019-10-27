@@ -1,0 +1,6 @@
+- name: Palo Alto
+  hosts: palo_alto
+  gather_facts: no
+  
+  roles:
+  - paBackup

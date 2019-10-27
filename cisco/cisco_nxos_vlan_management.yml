@@ -1,0 +1,35 @@
+---
+- hosts: cisco
+  gather_facts: no
+  connection: local
+
+  vars:
+    provision_vlan:
+      management:
+        vlan_id: 50
+        interface: 
+          - Ethernet1/12
+          - Ethernet1/10
+
+      test:
+        vlan_id: 10
+        interface: 
+          - Ethernet1/13
+          - Ethernet1/14
+    remove_vlan:
+       - 10
+       - 20
+
+  tasks:
+  - name: Provision VLAN
+    nxos_vlan:
+      name: "{{ item.key }}"
+      vlan_id: "{{ item.value.vlan_id }}"
+      interfaces: "{{ item.value.interface }}"
+    loop: "{{ lookup('dict', provision_vlan) }}"
+
+  - name: Remove VLAN
+    nxos_vlan:
+      vlan_id: "{{ item }}"
+      state: absent
+    with_items: "{{ remove_vlan }}"

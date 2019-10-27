@@ -1,0 +1,8 @@
+---
+- name: Cisco Playbook
+  hosts: cisco
+  gather_facts: no
+  connection: local
+
+  roles:
+  - ciscoComplianceCheck
