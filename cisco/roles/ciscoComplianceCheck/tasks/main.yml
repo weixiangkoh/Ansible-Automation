@@ -1,16 +1,11 @@
 ---
 # tasks file for ciscoComplianceCheck
-#- set_fact:
-#    ansible_host: "{{ inventory_hostname }}"
-
 - name: Getting IOS Facts
   ios_facts:
 
 - name: Mapping OS Compliance Version
   set_fact:
-    hardening_file: "{{ item.value }}"
-  loop: "{{ lookup('dict', compliance_file_mapping) }}"
-  when: "'{{ ansible_net_version }}' in item.key"
+    hardening_file: "{{ compliance_file_mapping[ansible_net_version] }}"
 
 - name: Importing vars file
   include_vars:
@@ -21,17 +16,18 @@
   ios_command:
     commands:
        - show run all
-       - show run | i snmp
     timeout: 60
   register: run
-
-- set_fact:
-    showRun: "{{ (run.stdout_lines[0] + \
-                  run.stdout_lines[1]) | join('\n') }}"
-
+                 
+- name: Create report output folder
+  file:
+    path: /opt/cisco
+    state: directory
+    mode: '0755'
+    
 - name: create HTML report
   template:
-    src: "./files/report-ios.j2"
-    dest: "{{ playbook_dir }}/generated_report.html"
+    src: "report-ios.j2"
+    dest: "/opt/cisco/generated_report.html"
   delegate_to: localhost
   run_once: true
