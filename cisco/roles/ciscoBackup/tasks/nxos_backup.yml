@@ -1,0 +1,20 @@
+---
+- nxos_facts:
+    gather_subset: all
+
+- name: Get backup
+  nxos_config:
+    backup: yes
+    backup_options:
+      filename: "{{ filename }}"
+      dir_path: "{{ playbook_dir }}/cfg/"
+
+- name: Remove lines
+  lineinfile:
+    path: "{{ path }}/{{ filename }}"
+    state: absent
+    regexp: "{{ item }}"
+  with_items:
+    - '^!Time'
+    - '^!Command'
+    - '^!Running configuration '

@@ -1,4 +1,7 @@
 ---
+filename: generated_report.html
+path: /opt/cisco_reports
+
 compliance_file_mapping:
   16.09.02: 15.2(4)E7
   16.06.05: 15.2(4)E7
@@ -7,3 +10,5 @@ compliance_file_mapping:
   15.2(4)E7: 15.2(4)E7
   15.5(1)SY3: 15.1.2-SY13
   15.4(1)T1: 15.2(4)E7
+  15.3(3)M5: 15.2(4)E7
+

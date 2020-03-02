@@ -1,4 +1,4 @@
 ---
-path: "/home/backup/cisco/{{ ansible_net_hostname }}/"
+path: "/opt/cisco/{{ ansible_net_hostname }}/"
 filename: "{{ ansible_net_hostname }}_{{ lookup('pipe','date +%d-%m-%Y') }}_config.txt"
 

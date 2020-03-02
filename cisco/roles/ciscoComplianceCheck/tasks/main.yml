@@ -1,11 +1,11 @@
 ---
-# tasks file for ciscoComplianceCheck
 - name: Getting IOS Facts
   ios_facts:
 
 - name: Mapping OS Compliance Version
   set_fact:
     hardening_file: "{{ compliance_file_mapping[ansible_net_version] }}"
+
 
 - name: Importing vars file
   include_vars:
@@ -18,16 +18,16 @@
        - show run all
     timeout: 60
   register: run
-                 
-- name: Create report output folder
+
+- name: Create Output Folder
   file:
-    path: /opt/cisco
+    path: "{{ path }}"
     state: directory
     mode: '0755'
-    
+
 - name: create HTML report
   template:
     src: "report-ios.j2"
-    dest: "/opt/cisco/generated_report.html"
+    dest: "{{ path }}/{{ filename }}"
   delegate_to: localhost
   run_once: true

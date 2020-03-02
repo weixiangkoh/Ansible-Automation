@@ -8,7 +8,8 @@
     path: "{{ path }}"
     state: directory
     mode: u=rwx,g=r,o=r
-    
+  delegate_to: localhost
+  
 - name: Issue "Show Run" command
   ios_command:
     commands: show run
@@ -19,4 +20,13 @@
     content: "{{ run.stdout[0] }}"
     dest: "{{ path }}/{{ filename }}"
   delegate_to: localhost
-  no_log: true
+
+- name: Remove lines
+  lineinfile:
+    path: "{{ path }}/{{ filename }}"
+    state: absent
+    regexp: "{{ item }}"
+  with_items:
+    - '^!Time'
+    - '^!Command'
+    - '^!Running configuration '

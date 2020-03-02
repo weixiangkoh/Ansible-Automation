@@ -7,3 +7,6 @@ hardening_check:
  - "service timestamps debug datetime msec localtime show-timezone"
  - "service timestamps log datetime msec localtime show-timezone"
  - "service password-encryption"
+
+risk_register:
+ - "service tcp-keepalives-in"

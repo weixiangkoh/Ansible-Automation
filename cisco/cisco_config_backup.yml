@@ -5,4 +5,4 @@
   connection: network_cli
 
   roles:
-  - ciscoComplianceCheck
+  - ciscoBackup

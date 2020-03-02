@@ -1,5 +1,5 @@
 ---
-# vars file for ciscoComplianceCheck LAN-WAN-Switch-15.2.4.E7
+# vars file cisco ios 15.2(4)E7
 hardening_check:
  - "no service pad"
  - "service tcp-keepalives-in"
@@ -8,3 +8,10 @@ hardening_check:
  - "service timestamps log datetime msec localtime show-timezone"
  - "service password-encryption"
  - "ip access-list standard Quiet_mode_Acl"
+
+risk_register:
+ - "service tcp-keepalives-out"
+ - "ip access-list standard Quiet_mode_Acl"
+ - "service timestamps debug datetime msec localtime show-timezone"
+ - "service timestamps log datetime msec localtime show-timezone"
+

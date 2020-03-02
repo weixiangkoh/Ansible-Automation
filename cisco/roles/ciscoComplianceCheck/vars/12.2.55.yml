@@ -8,3 +8,6 @@ hardening_check:
  - "service timestamps log datetime msec localtime show-timezone"
  - "service password-encryption"
 
+risk_register:
+ - "no service pad"
+
